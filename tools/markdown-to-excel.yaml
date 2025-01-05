@@ -30,5 +30,5 @@ parameters:
 
 extra:
   python:
-    source: tools/dify-plugin-markdown-to-excel.py
+    source: tools/markdown-to-excel.py
   

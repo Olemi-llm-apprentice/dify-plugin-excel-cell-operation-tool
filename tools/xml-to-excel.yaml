@@ -30,4 +30,4 @@ parameters:
 
 extra:
   python:
-    source: tools/dify-plugin-xml-to-excel.py
+    source: tools/xml-to-excel.py

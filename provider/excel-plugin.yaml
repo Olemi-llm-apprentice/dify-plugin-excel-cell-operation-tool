@@ -1,19 +1,19 @@
 identity:
   author: lemilemio
-  name: dify-plugin-markdown-to-excel
+  name: excel-plugin
   label:
-    en_US: dify-plugin-markdown-to-excel
-    zh_Hans: dify-plugin-markdown-to-excel
-    pt_BR: dify-plugin-markdown-to-excel
+    en_US: Excel-Plugin
+    zh_Hans: Excel-Plugin
+    pt_BR: Excel-Plugin
   description:
     en_US: Excel-Plugin
     zh_Hans: Excel-Plugin
     pt_BR: Excel-Plugin
   icon: icon.svg
 tools:
-  - tools/dify-plugin-markdown-to-excel.yaml
-  - tools/dify-plugin-excel-to-xml.yaml
-  - tools/dify-plugin-xml-to-excel.yaml
+  - tools/markdown-to-excel.yaml
+  - tools/excel-to-xml.yaml
+  - tools/xml-to-excel.yaml
 extra:
   python:
     source: provider/excel-plugin.py
