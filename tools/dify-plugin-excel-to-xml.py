@@ -123,25 +123,9 @@ def get_url_from_file_data(file_data: Any) -> str:
 
 class DifyPluginExcelToXMLTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage, None, None]:
-        # フバッグ用にパラメータの内容を出力（ファイルオブジェクトを除外）
-        try:
-            print("Debug - tool_parameters keys:", tool_parameters.keys())
-        except:
-            print("Debug - tool_parameters: <not serializable>")
         
         # ファイルオブジェクトを取得
         file_data = tool_parameters.get("file_url")
-        try:
-            if isinstance(file_data, dict):
-                print("Debug - file_data keys:", file_data.keys())
-            elif isinstance(file_data, list):
-                print("Debug - file_data is list of length:", len(file_data))
-                if len(file_data) > 0:
-                    print("Debug - first item keys:", file_data[0].keys())
-            else:
-                print("Debug - file_data type:", type(file_data))
-        except:
-            print("Debug - file_data: <not serializable>")
 
         if not file_data:
             yield ToolInvokeMessage(
@@ -153,7 +137,6 @@ class DifyPluginExcelToXMLTool(Tool):
         try:
             # ファイルのURLを取得
             file_url = get_url_from_file_data(file_data)
-            print("Debug - file_url:", file_url)  # 取得したURLを確認
             
             if not file_url:
                 yield ToolInvokeMessage(

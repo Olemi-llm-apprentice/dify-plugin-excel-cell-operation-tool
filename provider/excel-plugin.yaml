@@ -13,6 +13,7 @@ identity:
 tools:
   - tools/dify-plugin-markdown-to-excel.yaml
   - tools/dify-plugin-excel-to-xml.yaml
+  - tools/dify-plugin-xml-to-excel.yaml
 extra:
   python:
     source: provider/excel-plugin.py
