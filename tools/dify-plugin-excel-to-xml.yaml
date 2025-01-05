@@ -18,14 +18,14 @@ parameters:
     type: file
     required: true
     label:
-      en_US: Excel File URL
-      ja_JP: ExcelファイルのURL
-      zh_Hans: Excel文件URL
+      en_US: Excel File
+      ja_JP: Excelファイル
+      zh_Hans: Excel文件
     human_description:
-      en_US: The URL of the Excel file to convert
-      ja_JP: 変換するExcelファイルのURL
-      zh_Hans: 需要转换的Excel文件的URL
-    llm_description: The URL of the Excel file that needs to be converted to XML format
+      en_US: The Excel file to convert to XML
+      ja_JP: XMLに変換するExcelファイル
+      zh_Hans: 需要转换为XML的Excel文件
+    llm_description: The Excel file that needs to be converted to XML format
     form: llm
 
 extra:
