@@ -1,0 +1,33 @@
+identity:
+  name: excel_to_xml
+  author: Dify
+  label:
+    en_US: Excel to XML
+    ja_JP: ExcelからXML
+    zh_Hans: Excel转XML
+
+description:
+  human:
+    en_US: Convert Excel file to XML format text
+    ja_JP: ExcelファイルをXML形式のテキストに変換します
+    zh_Hans: 将Excel文件转换为XML格式文本
+  llm: A tool for converting Excel files to XML format text
+
+parameters:
+  - name: file_url
+    type: file
+    required: true
+    label:
+      en_US: Excel File URL
+      ja_JP: ExcelファイルのURL
+      zh_Hans: Excel文件URL
+    human_description:
+      en_US: The URL of the Excel file to convert
+      ja_JP: 変換するExcelファイルのURL
+      zh_Hans: 需要转换的Excel文件的URL
+    llm_description: The URL of the Excel file that needs to be converted to XML format
+    form: llm
+
+extra:
+  python:
+    source: tools/dify-plugin-excel-to-xml.py 

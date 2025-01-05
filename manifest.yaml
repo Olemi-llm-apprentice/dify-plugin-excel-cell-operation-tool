@@ -1,17 +1,17 @@
-version: 0.0.1
+version: 0.0.2
 type: plugin
 author: lemilemio
-name: dify-plugin-markdown-to-excel
+name: excel-plugin
 label:
-  en_US: dify-plugin-markdown-to-excel
-  ja_JP: dify-plugin-markdown-to-excel
-  zh_Hans: dify-plugin-markdown-to-excel
-  pt_BR: dify-plugin-markdown-to-excel
+  en_US: excel-plugin
+  ja_JP: excel-plugin
+  zh_Hans: excel-plugin
+  pt_BR: excel-plugin
 description:
-  en_US: markdown_to_excel
-  ja_JP: markdown_to_excel
-  zh_Hans: markdown_to_excel
-  pt_BR: markdown_to_excel
+  en_US: excel-plugin
+  ja_JP: excel-plugin
+  zh_Hans: excel-plugin
+  pt_BR: excel-plugin
 icon: icon.svg
 resource:
   memory: 268435456
@@ -25,7 +25,7 @@ resource:
       size: 1048576
 plugins:
   tools:
-    - provider/dify-plugin-markdown-to-excel.yaml
+    - provider/excel-plugin.yaml
 meta:
   version: 0.0.2
   arch:
