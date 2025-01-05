@@ -1,1 +1,5 @@
 dify_plugin
+openpyxl
+pandas
+requests
+lxml

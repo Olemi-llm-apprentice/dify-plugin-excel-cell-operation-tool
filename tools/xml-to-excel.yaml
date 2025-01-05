@@ -1,0 +1,33 @@
+identity:
+  name: xml_to_excel
+  author: Dify
+  label:
+    en_US: XML to Excel
+    ja_JP: XMLからExcel
+    zh_Hans: XML转Excel
+
+description:
+  human:
+    en_US: Convert XML format text to Excel file
+    ja_JP: XML形式のテキストをExcelファイルに変換します
+    zh_Hans: 将XML格式文本转换为Excel文件
+  llm: A tool for converting XML format text to Excel files
+
+parameters:
+  - name: xml_text
+    type: string
+    required: true
+    label:
+      en_US: XML Text
+      ja_JP: XMLテキスト
+      zh_Hans: XML文本
+    human_description:
+      en_US: The XML text to convert to Excel
+      ja_JP: Excelに変換するXMLテキスト
+      zh_Hans: 需要转换为Excel的XML文本
+    llm_description: The XML text that needs to be converted to Excel format
+    form: llm
+
+extra:
+  python:
+    source: tools/xml-to-excel.py

@@ -1,0 +1,19 @@
+identity:
+  author: lemilemio
+  name: excel-plugin
+  label:
+    en_US: Excel-Plugin
+    zh_Hans: Excel-Plugin
+    pt_BR: Excel-Plugin
+  description:
+    en_US: Excel-Plugin
+    zh_Hans: Excel-Plugin
+    pt_BR: Excel-Plugin
+  icon: icon.svg
+tools:
+  - tools/markdown-to-excel.yaml
+  - tools/excel-to-xml.yaml
+  - tools/xml-to-excel.yaml
+extra:
+  python:
+    source: provider/excel-plugin.py
