@@ -4,7 +4,7 @@ import pandas as pd
 import tempfile
 import os
 from pathlib import Path
-from io import StringIO
+from io import StringIO, BytesIO
 import json
 
 from dify_plugin import Tool
@@ -58,18 +58,18 @@ class DifyPluginMarkdownToExcelTool(Tool):
             df = df.dropna(axis=1, how='all')
             df = df.fillna('')
 
-            # 一時ファイルを作成
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
-                excel_path = tmp_file.name
-                
-            # ExcelファイルとしてDataFrameを保存
-            df.to_excel(excel_path, index=False, engine='openpyxl')
+            # メモリ上でExcelファイルを作成
+            excel_buffer = BytesIO()
+            df.to_excel(excel_buffer, index=False, engine='openpyxl')
+            excel_data = excel_buffer.getvalue()
             
-            # ファイルのURLを返す
-            file_url = f"file://{excel_path}"
-            yield ToolInvokeMessage(
-                type="text",
-                message={"text": file_url}
+            # blobメッセージとしてファイルを返す
+            yield self.create_blob_message(
+                blob=excel_data,
+                meta={
+                    "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "filename": "converted_table.xlsx"
+                }
             )
 
         except Exception as e:
