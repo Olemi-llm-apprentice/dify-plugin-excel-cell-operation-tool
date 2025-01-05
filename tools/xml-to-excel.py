@@ -60,18 +60,41 @@ def apply_cell_styles(cell, style_elements):
 
 def create_excel_from_xml(xml_text: str) -> BytesIO:
     """XML形式のテキストからExcelファイルを生成"""
-    # 新しいワークブックを作成
     wb = openpyxl.Workbook()
     ws = wb.active
     
     try:
-        # XMLをパース
         root = ET.fromstring(xml_text)
         worksheet = root.find('worksheet')
         if worksheet is None:
             raise ValueError("worksheetタグが見つかりません")
         
-        # 各行を処理
+        # 列幅の設定
+        for col_elem in worksheet.findall('column'):
+            col_letter = col_elem.get('letter')
+            width = col_elem.get('width')
+            if col_letter and width:
+                try:
+                    # 列幅を設定（直接ディメンションに設定）
+                    column_dimension = ws.column_dimensions[col_letter]
+                    column_dimension.width = float(width)
+                    print(f"Setting column {col_letter} width to {width}")  # デバッグ用
+                except Exception as e:
+                    print(f"Error setting column {col_letter} width: {str(e)}")  # デバッグ用
+                    continue
+        
+        # 行高さの設定
+        for row_elem in worksheet.findall('row'):
+            row_idx = row_elem.get('index')
+            height = row_elem.get('height')
+            if row_idx and height:
+                try:
+                    row = ws.row_dimensions[int(row_idx)]
+                    row.height = float(height)
+                except ValueError:
+                    continue  # 無効な行インデックスはスキップ
+        
+        # 各行のデータを処理
         for row_elem in worksheet.findall('row'):
             try:
                 row_idx = int(row_elem.get('index'))

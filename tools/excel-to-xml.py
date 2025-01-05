@@ -8,99 +8,129 @@ from io import BytesIO
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
 
-def get_important_cell_styles(cell) -> dict:
-    """デフォルトから変更のある重要なスタイル情報のみを取得"""
+def get_cell_styles(cell) -> dict:
+    """セルのすべてのスタイル情報を取得"""
     styles = {}
     
     # セル結合情報の取得
-    if cell.parent.merged_cells:  # merged_cellsはワークシートの属性
+    if cell.parent.merged_cells:
         for merged_range in cell.parent.merged_cells.ranges:
             if cell.coordinate in merged_range:
                 styles['merge'] = {
-                    'start': merged_range.coord.split(':')[0],  # 結合開始セル
-                    'end': merged_range.coord.split(':')[1]     # 結合終了セル
+                    'start': merged_range.coord.split(':')[0],
+                    'end': merged_range.coord.split(':')[1]
                 }
                 break
     
-    # 罫線情報（デフォルトのNoneまたはthinは除外）
-    borders = {}
-    for side in ['top', 'bottom', 'left', 'right']:
-        border = getattr(cell.border, side)
-        if border.style and border.style not in ['thin', None]:
-            borders[side] = border.style
-    if borders:
-        styles['borders'] = borders
+    # 罫線情報（すべての罫線情報を取得）
+    if cell.border:
+        borders = {}
+        for side in ['top', 'bottom', 'left', 'right']:
+            border = getattr(cell.border, side)
+            if border and border.style:
+                borders[side] = border.style
+        if borders:
+            styles['borders'] = borders
     
-    # 背景色（デフォルトの白や透明以外で、かつ有効な値の場合のみ）
-    if (cell.fill and cell.fill.start_color and 
-        cell.fill.start_color.rgb and 
-        cell.fill.start_color.rgb not in ['FFFFFFFF', '00000000'] and  # 白と透明を除外
-        isinstance(cell.fill.start_color.rgb, str)):
-        styles['background'] = cell.fill.start_color.rgb
+    # 背景色（パターンタイプと色情報を取得）
+    if cell.fill:
+        if hasattr(cell.fill, 'patternType') and cell.fill.patternType:
+            if cell.fill.patternType == 'solid':
+                if (cell.fill.start_color and 
+                    cell.fill.start_color.rgb and 
+                    isinstance(cell.fill.start_color.rgb, str)):
+                    # 透明の場合は除外
+                    if cell.fill.start_color.rgb != '00000000':
+                        styles['background'] = cell.fill.start_color.rgb
     
-    # 文字色（デフォルトの黒以外で、かつ有効な値の場合のみ）
+    # 文字色（すべての文字色を取得）
     if (cell.font and cell.font.color and 
         cell.font.color.rgb and 
-        cell.font.color.rgb != 'FF000000' and
         isinstance(cell.font.color.rgb, str)):
         styles['color'] = cell.font.color.rgb
     
-    return styles if styles else None
+    return styles
 
 def create_xml_with_styles(wb) -> str:
-    """ワークシートの内容と変更のあるスタイル情報のみをXMLに変換"""
+    """ワークシートの内容とすべてのスタイル情報をXMLに変換"""
     ws = wb.active
+    
+    # 結合セルの範囲を保存
+    merged_cells_ranges = ws.merged_cells.ranges.copy()
+    
+    # 結合セルを一時的に解除
+    for merged_cell_range in merged_cells_ranges:
+        ws.unmerge_cells(str(merged_cell_range))
+    
     xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>\n<workbook>']
+    xml_parts.append('  <worksheet>')
+    
+    # すべての列幅情報を追加
+    for col_letter, col in ws.column_dimensions.items():
+        if hasattr(col, 'width') and col.width is not None:
+            width = float(col.width)
+            xml_parts.append(f'    <column letter="{col_letter}" width="{width:.2f}"/>')
+    
+    # 結合セルを再設定
+    for merged_cell_range in merged_cells_ranges:
+        ws.merge_cells(str(merged_cell_range))
+    
+    # すべての行高さ情報を追加
+    for row_idx, row in ws.row_dimensions.items():
+        if row.height:
+            xml_parts.append(f'    <row index="{row_idx}" height="{row.height:.2f}"/>')
     
     # データ範囲を取得
     data_rows = list(ws.rows)
     if not data_rows:
         return "<workbook></workbook>"
     
-    xml_parts.append('  <worksheet>')
+    # セルの値をXMLエスケープする関数
+    def escape_xml(text):
+        if not isinstance(text, str):
+            text = str(text)
+        return (text.replace('&', '&amp;')
+                   .replace('<', '&lt;')
+                   .replace('>', '&gt;')
+                   .replace('"', '&quot;')
+                   .replace("'", '&apos;'))
     
-    for row_idx, row in enumerate(data_rows, 1):
-        has_content = False
-        row_parts = []
+    # すべてのセル情報を処理
+    for row in data_rows:
+        row_idx = row[0].row
+        xml_parts.append(f'    <row index="{row_idx}">')
         
-        for col_idx, cell in enumerate(row, 1):
-            col_letter = get_column_letter(col_idx)
-            value = cell.value if cell.value is not None else ""
-            styles = get_important_cell_styles(cell)
+        for cell in row:
+            # 値の有無に関わらずすべてのセルを出力
+            xml_parts.append(f'      <cell ref="{cell.coordinate}">')
             
-            # 値かスタイルがある場合のみ出力
-            if value or styles:
-                has_content = True
-                cell_parts = [f'      <cell ref="{col_letter}{row_idx}">']
-                
-                if value:
-                    cell_parts.append(f'        <value>{value}</value>')
-                
-                if styles:
-                    for style_type, style_value in styles.items():
-                        if isinstance(style_value, dict):
-                            # 罫線情報の場合
-                            if style_value:  # 空の辞書は出力しない
-                                cell_parts.append(f'        <{style_type}>')
-                                for side, style in style_value.items():
-                                    cell_parts.append(f'          <border side="{side}" style="{style}"/>')
-                                cell_parts.append(f'        </{style_type}>')
-                        else:
-                            # 背景色や文字色の場合（有効な値の場合のみ）
-                            cell_parts.append(f'        <{style_type}>{style_value}</{style_type}>')
-                
-                cell_parts.append('      </cell>')
-                row_parts.extend(cell_parts)
+            if cell.value is not None:
+                value = escape_xml(cell.value)
+                xml_parts.append(f'        <value>{value}</value>')
+            
+            # スタイル情報を追加
+            styles = get_cell_styles(cell)
+            if styles:
+                for style_name, style_value in styles.items():
+                    if style_name == 'merge':
+                        xml_parts.append('        <merge>')
+                        xml_parts.append(f'          <start>{style_value["start"]}</start>')
+                        xml_parts.append(f'          <end>{style_value["end"]}</end>')
+                        xml_parts.append('        </merge>')
+                    elif style_name == 'borders':
+                        xml_parts.append('        <borders>')
+                        for border_side, border_style in style_value.items():
+                            xml_parts.append(f'          <border side="{border_side}" style="{border_style}"/>')
+                        xml_parts.append('        </borders>')
+                    else:
+                        xml_parts.append(f'        <{style_name}>{style_value}</{style_name}>')
+            
+            xml_parts.append('      </cell>')
         
-        # 行に内容がある場合のみ出力
-        if has_content:
-            xml_parts.append(f'    <row index="{row_idx}">')
-            xml_parts.extend(row_parts)
-            xml_parts.append('    </row>')
+        xml_parts.append('    </row>')
     
     xml_parts.append('  </worksheet>')
     xml_parts.append('</workbook>')
-    
     return '\n'.join(xml_parts)
 
 def get_url_from_file_data(file_data: Any) -> str:

@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from io import StringIO, BytesIO
 import json
+import openpyxl
 
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
@@ -60,6 +61,11 @@ class DifyPluginMarkdownToExcelTool(Tool):
 
             # メモリ上でExcelファイルを作成
             excel_buffer = BytesIO()
+            wb = openpyxl.Workbook()
+            # 列幅の設定を保持するためのオプションを追加
+            wb.loaded_theme = True
+            wb.iso_dates = False
+            # その他の設定...
             df.to_excel(excel_buffer, index=False, engine='openpyxl')
             excel_data = excel_buffer.getvalue()
             
