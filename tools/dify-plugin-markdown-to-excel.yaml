@@ -1,30 +1,34 @@
 identity:
-  name: dify-plugin-markdown-to-excel
-  author: lemilemio
+  name: markdown_to_excel
+  author: Dify
   label:
-    en_US: dify-plugin-markdown-to-excel
-    zh_Hans: dify-plugin-markdown-to-excel
-    pt_BR: dify-plugin-markdown-to-excel
+    en_US: Markdown to Excel
+    ja_JP: マークダウンからExcel
+    zh_Hans: Markdown转Excel
+
 description:
   human:
-    en_US: markdown_to_excel
-    zh_Hans: markdown_to_excel
-    pt_BR: markdown_to_excel
-  llm: markdown_to_excel
+    en_US: Convert markdown tables to Excel files
+    ja_JP: マークダウン形式の表をExcelファイルに変換します
+    zh_Hans: 将Markdown表格转换为Excel文件
+  llm: A tool for converting markdown tables to Excel format files
+
 parameters:
-  - name: query
+  - name: markdown_text
     type: string
     required: true
     label:
-      en_US: Query string
-      zh_Hans: 查询语句
-      pt_BR: Query string
+      en_US: Markdown Table
+      ja_JP: マークダウン表
+      zh_Hans: Markdown表格
     human_description:
-      en_US: markdown_to_excel
-      zh_Hans: markdown_to_excel
-      pt_BR: markdown_to_excel
-    llm_description: markdown_to_excel
+      en_US: The markdown table text to convert
+      ja_JP: 変換するマークダウン形式の表テキスト
+      zh_Hans: 需要转换的Markdown表格文本
+    llm_description: The markdown table text that needs to be converted to Excel format
     form: llm
+
 extra:
   python:
     source: tools/dify-plugin-markdown-to-excel.py
+  
