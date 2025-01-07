@@ -15,7 +15,7 @@ def get_url_from_file_data(file_data: Any) -> str:
         return file_data['url']
     return ''
 
-class ExcelCellEditorTool(Tool):
+class ExcelCellWriterTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage, None, None]:
         try:
             # Excelファイルの取得
@@ -27,9 +27,15 @@ class ExcelCellEditorTool(Tool):
                 )
                 return
 
-            # 操作モードの取得
-            # operation = tool_parameters.get("operation", "read")
-            
+            # 編集データの取得
+            updates = tool_parameters.get("updates", {})
+            if not updates:
+                yield ToolInvokeMessage(
+                    type="text",
+                    message={"text": "更新データが提供されていません。"}
+                )
+                return
+
             # ファイルのURLを取得
             file_url = get_url_from_file_data(excel_file)
             
@@ -67,43 +73,36 @@ class ExcelCellEditorTool(Tool):
                 )
                 return
 
-            # if operation == "read":
-            #     # セル内容の読み取り
-            cell_data = {}
-            for row in ws.iter_rows():
-                for cell in row:
-                    if cell.value:
-                        cell_data[cell.coordinate] = cell.value
-            
-            yield ToolInvokeMessage(
-                type="text",
-                message={"text": str(cell_data)}
-            )
-            
-            # elif operation == "edit":
-            #     # セル内容の編集
-            #     edits = tool_parameters.get("edits", {})
-            #     for cell_ref, new_value in edits.items():
-            #         ws[cell_ref] = new_value
+            # セル内容の更新
+            try:
+                for cell_ref, new_value in updates.items():
+                    ws[cell_ref] = new_value
+            except Exception as e:
+                yield ToolInvokeMessage(
+                    type="text",
+                    message={"text": f"セル更新エラー: {str(e)}"}
+                )
+                return
+
+            # 編集結果を保存
+            try:
+                output = BytesIO()
+                wb.save(output)
+                output.seek(0)
                 
-            #     # 編集結果を保存
-            #     output = BytesIO()
-            #     wb.save(output)
-            #     output.seek(0)
-                
-            #     yield self.create_blob_message(
-            #         blob=output.getvalue(),
-            #         meta={
-            #             "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            #             "filename": "edited_file.xlsx"
-            #         }
-            #     )
-            
-            # else:
-            #     yield ToolInvokeMessage(
-            #         type="text",
-            #         message={"text": f"無効な操作モード: {operation}"}
-            #     )
+                yield self.create_blob_message(
+                    blob=output.getvalue(),
+                    meta={
+                        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "filename": "edited_file.xlsx"
+                    }
+                )
+            except Exception as e:
+                yield ToolInvokeMessage(
+                    type="text",
+                    message={"text": f"ファイル保存エラー: {str(e)}"}
+                )
+                return
 
         except Exception as e:
             yield ToolInvokeMessage(

@@ -1,0 +1,33 @@
+identity:
+  name: excel-cell-writer
+  author: Dify
+  label:
+    en_US: Excel Cell Writer
+    ja_JP: Excelセルライター
+    zh_Hans: Excel单元格写入器
+
+description:
+  human:
+    en_US: Write data to specific cells in Excel files
+    ja_JP: Excelファイルの指定されたセルにデータを書き込みます
+    zh_Hans: 将数据写入Excel文件的指定单元格
+  llm: A tool for writing data to specific cells in Excel files
+
+parameters:
+  - name: excel_file
+    type: file
+    required: true
+    label:
+      en_US: Excel File
+      ja_JP: Excelファイル
+      zh_Hans: Excel文件
+    human_description:
+      en_US: The Excel file to write data to
+      ja_JP: データを書き込むExcelファイル
+      zh_Hans: 要写入数据的Excel文件
+    llm_description: The Excel file that needs to be written to
+    form: llm
+
+extra:
+  python:
+    source: tools/excel-cell-writer.py
