@@ -12,6 +12,7 @@ identity:
   icon: icon.svg
 tools:
   - tools/markdown-to-excel.yaml
+  - tools/excel-cell-editor.yaml
   - tools/excel-to-xml.yaml
   - tools/xml-to-excel.yaml
 extra:

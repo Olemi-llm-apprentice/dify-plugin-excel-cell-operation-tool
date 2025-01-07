@@ -1,0 +1,33 @@
+identity:
+  name: excel-cell-editor
+  author: Dify
+  label:
+    en_US: Excel Cell Editor
+    ja_JP: Excelセルエディタ
+    zh_Hans: Excel单元格编辑器
+
+description:
+  human:
+    en_US: Read and edit Excel cell contents
+    ja_JP: Excelのセル内容を読み取り・編集します
+    zh_Hans: 读取和编辑Excel单元格内容
+  llm: A tool for reading and editing Excel cell contents
+
+parameters:
+  - name: excel_file
+    type: file
+    required: true
+    label:
+      en_US: Excel File
+      ja_JP: Excelファイル
+      zh_Hans: Excel文件
+    human_description:
+      en_US: The Excel file to read/edit
+      ja_JP: 読み取り/編集するExcelファイル
+      zh_Hans: 要读取/编辑的Excel文件
+    llm_description: The Excel file that needs to be read/edited
+    form: llm
+
+extra:
+  python:
+    source: tools/excel-cell-editor.py
