@@ -27,6 +27,19 @@ parameters:
       zh_Hans: 要写入数据的Excel文件
     llm_description: The Excel file that needs to be written to
     form: llm
+  - name: updates
+    type: string
+    required: true
+    label:
+      en_US: Cell Updates
+      ja_JP: セル更新
+      zh_Hans: 单元格更新
+    human_description:
+      en_US: Specify the cell references and their new values
+      ja_JP: セルの参照と新しい値を指定
+      zh_Hans: 指定单元格引用及其新值
+    llm_description: A mapping of cell references to new values
+    form: llm
 
 extra:
   python:

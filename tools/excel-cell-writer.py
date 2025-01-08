@@ -52,9 +52,6 @@ class ExcelCellWriterTool(Tool):
                 response.raise_for_status()
                 file_bytes = response.content
                 
-                # デバッグ用ログ（コンソール出力）
-                print(f"ファイルURL: {file_url}")
-                print(f"ファイルサイズ: {len(file_bytes)} bytes")
             except Exception as e:
                 yield ToolInvokeMessage(
                     type="text",
@@ -75,8 +72,42 @@ class ExcelCellWriterTool(Tool):
 
             # セル内容の更新
             try:
+                # updatesが文字列の場合、JSONとしてパース
+                if isinstance(updates, str):
+                    import json
+                    try:
+                        # シングルクォートをダブルクォートに置換
+                        updates = updates.replace("'", '"')
+                        # datetimeオブジェクトを文字列に変換
+                        updates = updates.replace(
+                            "datetime.datetime(", '"datetime('
+                        ).replace(")", ')"')
+                        updates = json.loads(updates)
+                    except json.JSONDecodeError as e:
+                        yield ToolInvokeMessage(
+                            type="text",
+                            message={"text": f"JSONパースエラー: {str(e)}\n入力データ: {updates}"}
+                        )
+                        return
+                
+                # updatesが辞書型か確認
+                if not isinstance(updates, dict):
+                    yield ToolInvokeMessage(
+                        type="text",
+                        message={"text": f"無効なupdates形式です。辞書型またはJSON文字列を指定してください\n入力データ: {updates}"}
+                    )
+                    return
+                
+                # セル更新処理
                 for cell_ref, new_value in updates.items():
                     ws[cell_ref] = new_value
+                    
+            except json.JSONDecodeError:
+                yield ToolInvokeMessage(
+                    type="text",
+                    message={"text": "JSONパースエラー: updatesが有効なJSON形式ではありません"}
+                )
+                return
             except Exception as e:
                 yield ToolInvokeMessage(
                     type="text",

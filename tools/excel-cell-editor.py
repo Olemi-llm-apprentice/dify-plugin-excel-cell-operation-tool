@@ -46,9 +46,6 @@ class ExcelCellEditorTool(Tool):
                 response.raise_for_status()
                 file_bytes = response.content
                 
-                # デバッグ用ログ（コンソール出力）
-                print(f"ファイルURL: {file_url}")
-                print(f"ファイルサイズ: {len(file_bytes)} bytes")
             except Exception as e:
                 yield ToolInvokeMessage(
                     type="text",
@@ -79,31 +76,6 @@ class ExcelCellEditorTool(Tool):
                 type="text",
                 message={"text": str(cell_data)}
             )
-            
-            # elif operation == "edit":
-            #     # セル内容の編集
-            #     edits = tool_parameters.get("edits", {})
-            #     for cell_ref, new_value in edits.items():
-            #         ws[cell_ref] = new_value
-                
-            #     # 編集結果を保存
-            #     output = BytesIO()
-            #     wb.save(output)
-            #     output.seek(0)
-                
-            #     yield self.create_blob_message(
-            #         blob=output.getvalue(),
-            #         meta={
-            #             "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            #             "filename": "edited_file.xlsx"
-            #         }
-            #     )
-            
-            # else:
-            #     yield ToolInvokeMessage(
-            #         type="text",
-            #         message={"text": f"無効な操作モード: {operation}"}
-            #     )
 
         except Exception as e:
             yield ToolInvokeMessage(
