@@ -1,17 +1,17 @@
 version: 0.0.2
 type: plugin
 author: lemilemio
-name: excel-plugin
+name: excel-cell-operation-tool
 label:
-  en_US: excel-plugin
-  ja_JP: excel-plugin
-  zh_Hans: excel-plugin
-  pt_BR: excel-plugin
+  en_US: Excel Cell Operation Tool
+  ja_JP: Excelセル操作ツール
+  zh_Hans: Excel单元格操作工具
+  pt_BR: Ferramenta de Operação de Células Excel
 description:
-  en_US: excel-plugin
-  ja_JP: excel-plugin
-  zh_Hans: excel-plugin
-  pt_BR: excel-plugin
+  en_US: Read and write Excel cell contents with ease
+  ja_JP: Excelのセル内容を簡単に読み取り・編集できるツール
+  zh_Hans: 轻松读取和编辑Excel单元格内容的工具
+  pt_BR: Ferramenta para ler e editar conteúdo de células Excel com facilidade
 icon: icon.svg
 resource:
   memory: 268435456
