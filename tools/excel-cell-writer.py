@@ -15,6 +15,14 @@ def get_url_from_file_data(file_data: Any) -> str:
         return file_data['url']
     return ''
 
+def get_blob_from_file_data(file_data: Any) -> bytes:
+    """Difyのファイルデータからblobを抽出する"""
+    if hasattr(file_data, 'blob'):
+        return file_data.blob
+    elif isinstance(file_data, dict) and 'blob' in file_data:
+        return file_data['blob']
+    return None
+
 class ExcelCellWriterTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage, None, None]:
         try:
@@ -36,32 +44,19 @@ class ExcelCellWriterTool(Tool):
                 )
                 return
 
-            # ファイルのURLを取得
-            file_url = get_url_from_file_data(excel_file)
+            # ファイルのblobデータを取得
+            file_blob = get_blob_from_file_data(excel_file)
             
-            if not file_url:
+            if not file_blob:
                 yield ToolInvokeMessage(
                     type="text",
-                    message={"text": "ファイルのURLが見つかりません。"}
-                )
-                return
-
-            # ファイルをダウンロード
-            try:
-                response = requests.get(file_url)
-                response.raise_for_status()
-                file_bytes = response.content
-                
-            except Exception as e:
-                yield ToolInvokeMessage(
-                    type="text",
-                    message={"text": f"ファイルのダウンロードに失敗しました: {str(e)}"}
+                    message={"text": "ファイルのblobデータが見つかりません。"}
                 )
                 return
 
             # Excelファイルの読み込み
             try:
-                wb = openpyxl.load_workbook(BytesIO(file_bytes))
+                wb = openpyxl.load_workbook(BytesIO(file_blob))
                 ws = wb.active
             except Exception as e:
                 yield ToolInvokeMessage(
