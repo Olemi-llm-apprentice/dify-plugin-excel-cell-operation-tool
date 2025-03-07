@@ -1,10 +1,15 @@
-## dify-plugin-markdown-to-excel
+## Description
 
-**Author:** lemilemio
-**Version:** 0.0.1
-**Type:** extension
+このプラグインは、Difyのツールプラグインです。DifyにExcelファイルの操作機能を追加します。
+このプラグインを使用してExcelファイルアクティブで保存されたシートのセルの読み取りと書き込みを行うことができます。
 
-### Description
+### 主な機能
 
+1. **Excelセルの読み取り** (Excel Cell Editor)
+   - Excelファイルの各セルの内容を読み取り
+   - セルの座標と値をマッピングして返却
+   - 空のセルは無視して有効なデータのみを取得
 
-
+2. **Excelセルの書き込み** (Excel Cell Writer)
+   - JSON形式でセルの更新内容を指定することで、Excel Cell Editorで読み取ったセルに新しい値を更新可能
+   - 更新されたファイルは新しいExcelファイルとして保存
